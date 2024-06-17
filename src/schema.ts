@@ -23,7 +23,30 @@ export const typeDefs = gql`
     getPeople: [People!]!
 
   }
- 
+  type Mutation {
+  incrementTrackLikes(id: ID!): IncrementTrackLikesResponse!
+  createUser(username: String!, password: String!): CreateUserResponse!
+  }
+  type IncrementTrackLikesResponse {
+  code: Int!
+  success: Boolean!
+  message: String!
+  track: Track
+  }
+
+type CreateUserResponse {
+  code: Int!
+  success: Boolean!
+  message: String!
+  user: User
+}
+
+
+  type User {
+    id: ID!
+    username: String!
+  }
+  
   enum SPECIALITY {
     PSYCHOLOGIST
     OPHTALMOLOGIST
@@ -33,6 +56,7 @@ export const typeDefs = gql`
     title: String!
     author: Author!
     thumbnail: String
+    numberOfLikes: Int
   }
   type Author {
   id: ID!

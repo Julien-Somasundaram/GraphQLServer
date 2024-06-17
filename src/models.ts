@@ -22,7 +22,7 @@ export type FilmModel = {
 export type PeopleModel = {
     id: string,
     name: string,
-    eyeColor: string,
+    eyeColor : string,
     films: string[]
     
 }

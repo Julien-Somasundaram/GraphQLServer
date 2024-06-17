@@ -1,6 +1,7 @@
 import { GraphQLError } from "graphql";
 
 import { Resolvers, Speciality } from "./types.js"
+import { createUser } from "./mutations/user/createUser.js";
 
 const doctorsData = [
     {
@@ -16,18 +17,15 @@ const doctorsData = [
   ];
 
 export const resolvers:Resolvers = {
-    Query: {
-      doctors: (parent, args, context, info) => {
-        const specialities = args.specialities
-        return doctorsData.filter(d => specialities.includes(d.speciality))
-  
-        
-      },
-      doctor: (parent, args, context, info) => {
-        const id = args.id
-
-        return doctorsData.find(d => d.id === id)
-      },
+  Query: {
+    doctors: (parent, args, context, info) => {
+      const {specialities} = args
+      return doctorsData.filter(doctor => (specialities ?? []).includes(doctor.speciality))
+    },
+    doctor: (parent, args, context, info) => {
+      const id = args.id
+      return doctorsData.find(d => d.id === id) ?? null
+    },
     divide: (parent, args, context, info) => {
         const { number1, number2 } = args
         if (number2 === 0) {
@@ -45,6 +43,29 @@ export const resolvers:Resolvers = {
     getPeople: (parent,args,{dataSources},info) => {
         return dataSources.GhibliAPI.getPeoples()
     }
+    },
+    Mutation: {
+      async incrementTrackLikes(_, {id}, context, info) {
+        try {
+          const track = await context.dataSources.trackAPI.incrementTrackLikes(id)
+          const message = `Successfully incremented number of Likes for track ${id}`
+    
+          return {
+            code: 200,
+            message,
+            success: Boolean(track),
+            track,
+          }
+        } catch(err) {
+          return {
+            code: 304,
+            message: (err as Error)?.message ?? 'Resource not modified, an internal error occured',
+            success: false,
+            track: null,
+          }
+        }
+      },
+      createUser: createUser
     },
     
 
